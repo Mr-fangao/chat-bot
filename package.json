@@ -8,8 +8,8 @@
     "debug": "node index.js --debug"
   },
   "dependencies": {
-    "icqq": "^0.5.0",
-    "axios": "^1.7.0"
+    "axios": "^1.7.0",
+    "node-napcat-ts": "^0.4.25"
   },
   "engines": {
     "node": ">=18.0.0"

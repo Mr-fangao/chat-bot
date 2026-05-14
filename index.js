@@ -149,8 +149,9 @@ function loadConfig() {
   }
 
   // 设置默认值
-  config.qq.platform = config.qq.platform || 5;
   config.qq.messageDelay = config.qq.messageDelay || 3000;
+  config.qq.napcatWsUrl = config.qq.napcatWsUrl || 'ws://localhost:3001';
+  config.qq.napcatToken = config.qq.napcatToken || '';
   config.ai.model = config.ai.model || 'glm-4.5-flash';
   config.ai.temperature = config.ai.temperature ?? 0.7;
   config.ai.maxTokens = config.ai.maxTokens || 500;

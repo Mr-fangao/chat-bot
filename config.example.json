@@ -3,7 +3,8 @@
     "account": 123456789,
     "girlfriendQQ": 987654321,
     "messageDelay": 3000,
-    "platform": 5
+    "napcatWsUrl": "ws://localhost:3001",
+    "napcatToken": ""
   },
   "ai": {
     "apiKey": "你的智谱AI API Key，从 https://open.bigmodel.cn 获取",

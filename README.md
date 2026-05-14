@@ -24,15 +24,27 @@
 
 - Node.js v18 或更高版本
 - Windows 11（也支持 macOS/Linux）
+- [NapCatQQ](https://github.com/NapNeko/NapCatQQ) — QQ 无头框架（负责 QQ 登录和消息收发）
 
-### 2. 安装依赖
+### 2. 安装 NapCatQQ
+
+NapCatQQ 是本项目的 QQ 协议层，需要先启动。
+
+**Windows 用户（推荐）**：
+1. 下载 [NapCatQQ 最新版](https://github.com/NapNeko/NapCatQQ/releases)
+2. 解压后运行 `napcat.exe`
+3. 浏览器打开 `http://localhost:6099/webui` 完成扫码登录
+4. 在 WebUI 中启用 WebSocket 服务（默认端口 3001）
+5. 如设置了 Access Token，记录下 token 值
+
+### 3. 安装依赖
 
 ```bash
 cd qq-chat-bot
 npm install
 ```
 
-### 3. 配置
+### 4. 配置
 
 ```bash
 copy config.example.json config.json
@@ -46,7 +58,8 @@ copy config.example.json config.json
     "account": 你的QQ号,
     "girlfriendQQ": 女朋友的QQ号,
     "messageDelay": 3000,
-    "platform": 5
+    "napcatWsUrl": "ws://localhost:3001",
+    "napcatToken": ""
   },
   "ai": {
     "apiKey": "你的智谱AI API Key",
@@ -69,7 +82,8 @@ copy config.example.json config.json
 **获取智谱AI API Key**：访问 [智谱AI开放平台](https://open.bigmodel.cn/) 注册并获取API Key。
 
 **配置说明**：
-- `qq.platform`: 登录协议，5=iPad 风控较少；如有问题可改为 1=安卓手机
+- `qq.napcatWsUrl`: NapCatQQ WebSocket 地址，默认 ws://localhost:3001
+- `qq.napcatToken`: NapCatQQ 的 Access Token（如无设置则留空）
 - `app.mode`: 启动默认模式 `review`=审核模式，`auto`=自动模式，`manual`=手动模式
 - `app.historyCount`: 每次AI请求携带的历史消息条数
 
@@ -162,7 +176,19 @@ A: 导入更多历史聊天记录，让 AI 有更多样本学习你的风格。
 
 ## 技术栈
 
-- [icqq](https://github.com/icqqjs/icqq) - Node.js QQ协议库
+- [NapCatQQ](https://github.com/NapNeko/NapCatQQ) - QQ 无头框架（代替已失效的 icqq）
+- [node-napcat-ts](https://github.com/huankong-team/node-napcat-ts) - NapCatQQ TypeScript SDK
 - [智谱AI GLM-4.5-Flash](https://open.bigmodel.cn/) - 大语言模型
 - axios - HTTP客户端
 - Node.js readline - 控制台交互
+
+## 常见问题
+
+**Q: 为什么不用 icqq？**
+A: icqq 已于 2024 年停止维护，QQ 登录协议已变更。现在使用 NapCatQQ + node-napcat-ts 方案。
+
+**Q: 连接不上 NapCatQQ？**
+A: 确认 NapCatQQ 已启动，访问 http://localhost:6099/webui 检查状态，确保 WebSocket 已启用。
+
+**Q: 发送消息失败？**
+A: 检查 NapCatQQ WebUI 中 QQ 是否在线，尝试增大 `messageDelay` 参数。

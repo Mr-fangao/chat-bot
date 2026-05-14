@@ -8,8 +8,9 @@ node_modules/
 chat-history/history.json
 chat-history/key-info.json
 
-# QQ登录态缓存
+# QQ登录态缓存 / 测试数据
 data/
+test_data/
 
 # 日志
 *.log
