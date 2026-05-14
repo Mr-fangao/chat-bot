@@ -1,0 +1,19 @@
+# 敏感配置文件（包含API Key和QQ账号密码）
+config.json
+
+# 依赖
+node_modules/
+
+# 运行时数据
+chat-history/history.json
+chat-history/key-info.json
+
+# QQ登录态缓存
+data/
+
+# 日志
+*.log
+
+# 系统文件
+.DS_Store
+Thumbs.db

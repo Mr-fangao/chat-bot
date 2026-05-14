@@ -1,0 +1,19 @@
+{
+  "name": "qq-chat-bot",
+  "version": "1.0.0",
+  "description": "QQ智能代聊机器人 - 基于icqq和智谱AI GLM-4.5-Flash",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "debug": "node index.js --debug"
+  },
+  "dependencies": {
+    "icqq": "^0.5.0",
+    "axios": "^1.7.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "author": "",
+  "license": "MIT"
+}
