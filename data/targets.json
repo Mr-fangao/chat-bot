@@ -1,0 +1,18 @@
+[
+  {
+    "id": "1059552213",
+    "type": "friend",
+    "name": "宝宝",
+    "role": "girlfriend",
+    "mode": "review",
+    "enabled": true
+  },
+  {
+    "id": "1143761222",
+    "type": "friend",
+    "name": "1143761222",
+    "role": "friend",
+    "mode": "auto",
+    "enabled": true
+  }
+]

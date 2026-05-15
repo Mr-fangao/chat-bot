@@ -1,23 +1,4 @@
-const axios = require('axios');
-
-// ========== 系统提示词（来自产品文档 4.3.2） ==========
-const SYSTEM_PROMPT = `你现在需要扮演我本人，回复我女朋友的消息。
-
-你的任务是：
-1. 完全模仿我的说话风格和语气，绝对不要暴露你是AI
-2. 基于我们的历史聊天记录，生成自然、连贯、简短的回复
-3. 记住我们之间的所有重要信息，不要问已经问过的问题
-4. 回复要口语化，像真实聊天一样，不要长篇大论
-5. 可以适当使用表情符号，但不要过多
-6. 会主动关心她，会表达想念，会回应她的情绪
-7. 如果她问的问题你不知道答案，就说"我不太清楚呢"或者转移话题，不要编造信息
-8. 绝对不要说"我是AI"、"我是机器人"、"根据历史记录"之类的话
-
-我的说话风格特点：
-- 比较温柔，会用"宝宝"称呼她
-- 有时候会有点小调皮
-- 不喜欢说太肉麻的话
-- 回复通常比较简短，不会一次发很多字`;
+import axios from 'axios';
 
 // ========== AI 身份暴露关键词 ==========
 const AI_EXPOSURE_KEYWORDS = [
@@ -42,11 +23,11 @@ const SENSITIVE_WORDS = [
 
 // ========== 兜底回复池 ==========
 const FALLBACK_REPLIES = [
-  '稍等一下，我这边有点事',
-  '刚才没看到消息',
-  '在呢，刚在忙',
-  '来啦来啦',
-  '嗯嗯，你说',
+  '在呢',
+  '刚没看到',
+  '来啦',
+  '嗯你说',
+  '忙呢',
 ];
 
 // ========== 负面情绪关键词 ==========
@@ -61,7 +42,8 @@ class AIClient {
     this.apiKey = config.apiKey;
     this.model = config.model || 'glm-4.5-flash';
     this.temperature = config.temperature || 0.7;
-    this.maxTokens = config.maxTokens || 500;
+    this.maxTokens = config.maxTokens || 4096;
+    this.noThinking = config.noThinking !== undefined ? config.noThinking : true;
     this.maxRetries = config.maxRetries || 3;
     this.retryDelay = config.retryDelay || 2000;
     this.splitThreshold = config.messageSplitThreshold || 80;
@@ -75,9 +57,9 @@ class AIClient {
    * @param {string} newMessage - 对方刚发的消息
    * @returns {Promise<string>} - 生成的回复
    */
-  async generateReply(context, newMessage) {
+  async generateReply(systemPrompt, context, newMessage) {
     const messages = [
-      { role: 'system', content: SYSTEM_PROMPT },
+      { role: 'system', content: systemPrompt },
     ];
 
     if (context && context.trim()) {
@@ -86,10 +68,17 @@ class AIClient {
 
     messages.push({ role: 'user', content: '她刚才说：' + newMessage });
 
-    let lastError = null;
+    // 整体硬超时 45 秒，防止任何情况下的卡死
+    const hardTimeout = new Promise((_, reject) =>
+      setTimeout(() => reject(new Error('AI 请求超时 (45s)')), 45000)
+    );
 
-    for (let attempt = 0; attempt <= this.maxRetries; attempt++) {
+    const doRequest = async () => {
+      let lastError = null;
+      for (let attempt = 0; attempt <= this.maxRetries; attempt++) {
       try {
+        console.log('[AI] 请求中... (attempt ' + (attempt + 1) + '/' + (this.maxRetries + 1) + ')');
+        const startTime = Date.now();
         const response = await axios.post(
           this.baseURL,
           {
@@ -97,15 +86,17 @@ class AIClient {
             temperature: this.temperature,
             max_tokens: this.maxTokens,
             messages: messages,
+            ...(this.noThinking ? { thinking: { type: 'disabled' } } : {}),
           },
           {
             headers: {
               'Authorization': 'Bearer ' + this.apiKey,
               'Content-Type': 'application/json',
             },
-            timeout: 30000, // 30秒超时
+            timeout: 15000,
           }
         );
+        console.log('[AI] 响应耗时: ' + (Date.now() - startTime) + 'ms');
 
         const content = response.data?.choices?.[0]?.message?.content;
         if (!content || content.trim().length === 0) {
@@ -127,9 +118,17 @@ class AIClient {
       }
     }
 
-    // 所有重试失败 → 兜底
-    console.error('[AI] 所有重试失败: ' + (lastError ? lastError.message : 'unknown'));
-    return this._getFallback();
+      // 所有重试失败 → 兜底
+      console.error('[AI] 重试耗尽: ' + (lastError ? (lastError.code || lastError.message) : 'unknown'));
+      return this._getFallback();
+    };
+
+    try {
+      return await Promise.race([doRequest(), hardTimeout]);
+    } catch (err) {
+      console.error('[AI] 硬超时触发: ' + err.message);
+      return this._getFallback();
+    }
   }
 
   // ========== 回复后处理 ==========
@@ -234,7 +233,7 @@ class AIClient {
 
   /** 为负面情绪消息构建增强提示 */
   buildNegativePrompt(message) {
-    return `注意：她现在的消息包含负面情绪（"${message}"），请优先追问原因和表达安慰，绝对不要转移话题或敷衍。`;
+    return `注意：她现在生气了（"${message}"）。不要长篇道歉，回一句话表达你在意但别舔。简短。`;
   }
 
   // ========== 工具方法 ==========
@@ -260,4 +259,4 @@ class AIClient {
   }
 }
 
-module.exports = AIClient;
+export default AIClient;

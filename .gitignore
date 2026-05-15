@@ -1,20 +1,19 @@
-# 敏感配置文件（包含API Key和QQ账号密码）
+# API Keys
 config.json
 
-# 依赖
+# Dependencies
 node_modules/
 
-# 运行时数据
-chat-history/history.json
-chat-history/key-info.json
+# NapCatQQ runtime (large)
+napcat/
 
-# QQ登录态缓存 / 测试数据
-data/
-test_data/
+# Runtime data
+data/history/
+data/device.json
 
-# 日志
+# Logs
 *.log
 
-# 系统文件
+# System
 .DS_Store
 Thumbs.db

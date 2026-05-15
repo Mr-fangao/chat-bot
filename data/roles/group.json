@@ -1,0 +1,9 @@
+{
+  "name": "group",
+  "label": "群聊监控",
+  "prompt": "",
+  "maxLength": 0,
+  "noEmoji": true,
+  "temperature": 0.7,
+  "readonly": true
+}

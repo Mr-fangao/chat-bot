@@ -1,15 +1,23 @@
 {
   "name": "qq-chat-bot",
   "version": "1.0.0",
-  "description": "QQ智能代聊机器人 - 基于icqq和智谱AI GLM-4.5-Flash",
-  "main": "index.js",
+  "description": "QQ智能代聊机器人 v2 - Vue3 + NapCat + 智谱AI",
+  "type": "module",
+  "main": "server.js",
   "scripts": {
-    "start": "node index.js",
-    "debug": "node index.js --debug"
+    "start": "node server.js",
+    "dev": "node server.js",
+    "build:client": "cd client && npm run build",
+    "debug": "node server.js --debug"
   },
   "dependencies": {
     "axios": "^1.7.0",
-    "node-napcat-ts": "^0.4.25"
+    "chokidar": "^5.0.0",
+    "cors": "^2.8.6",
+    "express": "^5.2.1",
+    "node-napcat-ts": "^0.4.25",
+    "open": "^11.0.0",
+    "ws": "^8.20.1"
   },
   "engines": {
     "node": ">=18.0.0"
